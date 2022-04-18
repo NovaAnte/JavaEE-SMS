@@ -1,12 +1,15 @@
 package se.iths.rest;
 
+import se.iths.entity.Student;
 import se.iths.entity.Subject;
+import se.iths.entity.Teacher;
 import se.iths.service.SubjectService;
 
 import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.List;
 
 @Path("subjects")
 @Consumes(MediaType.APPLICATION_JSON)
@@ -39,6 +42,18 @@ public class SubjectRest {
         return Response.ok(foundSubject).build();
     }
 
+    @Path("getall")
+    @GET
+    public Response getAllSubjects(){
+        List<Subject> allSubjects = subjectService.findAllSubjects();
+        if (allSubjects.isEmpty()){
+            return Response.status(Response.Status.NO_CONTENT).build();
+        } else {
+            return Response.ok(allSubjects).build();
+        }
+
+    }
+
     @Path("update/{id}")
     @PUT
     public Response updateSubject(@PathParam("id") Long id, Subject subject) {
@@ -67,6 +82,34 @@ public class SubjectRest {
 
         return OK("{\"Success\": \"Subject deleted from database.\"}");
     }
+
+    @Path("linkstudent")
+    @PATCH
+    public Response linkStudentToSubject(@QueryParam("studentId") Long studentId, @QueryParam("subjectId") Long subjectId){
+        Subject foundSubject = subjectService.findSubjectById(subjectId);
+        Student foundStudent = subjectService.findStudentById(studentId);
+
+        if (foundSubject != null && foundStudent != null){
+            subjectService.linkStudent(foundSubject, foundStudent);
+        }
+        // add errorhandling here
+        return Response.ok().build();
+    }
+
+    @Path("linkteacher")
+    @PATCH
+    public Response linkTeacherToSubject(@QueryParam("teacherId") Long teacherId, @QueryParam("subjectId") Long subjectId){
+        Subject foundSubject = subjectService.findSubjectById(subjectId);
+        Teacher foundTeacher = subjectService.findTeacherById(teacherId);
+
+        if (foundSubject != null && foundTeacher != null){
+            subjectService.linkTeacher(foundSubject, foundTeacher);
+        }
+        // add errorhandling here
+
+        return Response.ok().build();
+    }
+
 
     private Response OK(String message) {
         return Response.ok("Success").entity(message).build();

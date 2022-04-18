@@ -28,6 +28,7 @@ public class Subject {
         this.subjectName = subjectName;
     }
 
+
     public void addStudent(Student student){
         studentSet.add(student);
     }
@@ -59,4 +60,9 @@ public class Subject {
     public void setTeacher(Teacher teacher) {
         this.teacher = teacher;
     }
+
+    public void addTeacher(Teacher teacher) {
+        addTeacher(teacher);
+    }
+
 }

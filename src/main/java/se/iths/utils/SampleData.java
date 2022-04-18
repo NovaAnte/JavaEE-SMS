@@ -25,6 +25,7 @@ public class SampleData {
         Subject subject1 = new Subject("English");
         Subject subject2 = new Subject("Swedish");
         Subject subject3 = new Subject("Physics");
+        Subject subject4 = new Subject("TestSubject");
 
         Student student1 = new Student("a123123", "b123123", "a@mail.se", "d123123123123");
         Student student2 = new Student("123123123", "12312312312", "b@mail.se", "d12312123123123123123123");
@@ -44,6 +45,7 @@ public class SampleData {
         entityManager.persist(subject1);
         entityManager.persist(subject2);
         entityManager.persist(subject3);
+        entityManager.persist(subject4);
         entityManager.persist(teacher1);
         entityManager.persist(teacher2);
 

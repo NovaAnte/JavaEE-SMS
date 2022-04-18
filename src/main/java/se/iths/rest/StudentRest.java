@@ -25,7 +25,7 @@ public class StudentRest {
         this.studentService = studentService;
     }
 
-    @Path("new")
+    @Path("")
     @POST
     public Response addStudent(Student student) {
         String emailExistsJson = "{\"Error\": \"Email already exists\"}";

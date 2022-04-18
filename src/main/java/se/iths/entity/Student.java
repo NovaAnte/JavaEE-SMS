@@ -4,10 +4,11 @@ package se.iths.entity;
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 public class Student {
-
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
@@ -23,6 +24,9 @@ public class Student {
     @Column(unique = true)
     private String email;
 
+    @ManyToMany(mappedBy = "studentSet", cascade = CascadeType.PERSIST)
+    private Set<Subject> subjectSet = new HashSet<>();
+
 
     public Student() {
 
@@ -34,6 +38,11 @@ public class Student {
         this.email = email;
         this.phoneNumber = phoneNumber;
 
+    }
+
+    public void addSubject(Subject subject){
+        subjectSet.add(subject);
+        subject.addStudent(this);
     }
 
     public Long getId() {

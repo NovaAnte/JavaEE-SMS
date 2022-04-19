@@ -29,6 +29,7 @@ Delete: http://localhost:8080/student-management-system/api/v1/teachers/delete/i
 ```
 Create: http://localhost:8080/student-management-system/api/v1/subjects (add JSON-body)
 Read: http://localhost:8080/student-management-system/api/v1/subjects/id
+Read all subjects: http://localhost:8080/student-management-system/api/v1/subjects/getall
 Update: http://localhost:8080/student-management-system/api/v1/subjects/update/id (add JSON-body)
 Delete: http://localhost:8080/student-management-system/api/v1/subjects/delete
 Link teacher to subject: http://localhost:8080/student-management-system/api/v1/subjects/linkteacher?teacherId=x&subjectId=x

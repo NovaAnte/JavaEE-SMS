@@ -109,14 +109,18 @@ public class StudentRest {
         }
     }
 
-    @Path("{id}")
+    @Path("delete/{id}")
     @DELETE
     public Response deleteStudent(@PathParam("id") Long id) {
         Student foundStudent = studentService.findStudentById(id);
-        if (foundStudent == null) {
-            return NotFound("Could not find a student with that ID.");
+
+        try {
+            studentService.deleteStudent(id);
+        } catch (Exception e){
+            if (foundStudent == null) {
+                throw new WebApplicationException(NotFound("Could not find a student with that ID."));
+            }
         }
-        studentService.deleteStudent(id);
 
         return OK("Student deleted from database.");
     }

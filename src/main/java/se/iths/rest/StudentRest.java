@@ -3,6 +3,7 @@ package se.iths.rest;
 import se.iths.entity.Student;
 
 import se.iths.exceptions.EmailInUseException;
+import se.iths.exceptions.JsonFormatter;
 import se.iths.service.StudentService;
 
 import javax.inject.Inject;
@@ -28,20 +29,19 @@ public class StudentRest {
     @Path("")
     @POST
     public Response addStudent(Student student) {
-        String emailExistsJson = "{\"Error\": \"Email already exists\"}";
         if (studentService.isEmailRegistered(student.getEmail())) {
-            return Response.status(Response.Status.CONFLICT).entity(emailExistsJson).build();
+            return Conflict("Email already exists");
         }
         try {
             studentService.addStudent(student);
         } catch (ValidationException e) {
-            String invalidDetails = "{\"Error\": \"You have not entered your details correctly. \" + \"Exception:" + e + "\"}";
+            String invalidDetails = "You have not entered your details correctly. + Exception:" + e;
 
             throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST).entity(
                     invalidDetails).build());
         }
 
-        return OK("{\"Success\": \"Student successfully saved to database.\"}");
+        return OK("Student successfully saved to database.");
     }
 
     @Path("update/{id}")
@@ -50,18 +50,18 @@ public class StudentRest {
             throws EmailInUseException {
         Student foundStudent = studentService.findStudentById(id);
         if (foundStudent == null) {
-            return NotFound("{\"Error\": \"No student with that ID found.\"}");
+            return NotFound("No student with that ID found.");
         }
 
         if (student.getFirstName() != null && !student.getFirstName().isEmpty()) {
             foundStudent.setFirstName(student.getFirstName());
         } else {
-            return BadRequest("{\"Error\": \"First name can not be null or empty.\"}");
+            return BadRequest("First name can not be null or empty.");
         }
         if (student.getLastName() != null && !student.getLastName().isEmpty()) {
             foundStudent.setLastName(student.getLastName());
         } else {
-            return BadRequest("{\"Error\": \"Last name can not be null or empty.\"}");
+            return BadRequest("Last name can not be null or empty.");
         }
         if (student.getEmail() != null && !student.getEmail().isEmpty()) {
             if (studentService.isEmailRegistered(student.getEmail()) && (id != foundStudent.getId())) {
@@ -69,7 +69,7 @@ public class StudentRest {
             }
             foundStudent.setEmail(student.getEmail());
         } else {
-            return BadRequest("{\"Error\": \"Email can not be null or empty.\"}");
+            return BadRequest("Email can not be null or empty.");
         }
         foundStudent.setPhoneNumber(student.getPhoneNumber());
 
@@ -93,7 +93,7 @@ public class StudentRest {
     public List<Student> getStudentByLastName(@QueryParam("lastName") String lastName) {
         List<Student> foundStudents = studentService.getStudentByLastName(lastName);
         if (foundStudents.size() == 0) {
-            throw new WebApplicationException(NotFound("{\"Error\": \"Could not find a student with that name.\"}"));
+            throw new WebApplicationException(NotFound("Could not find a student with that name."));
         }
         return studentService.getStudentByLastName(lastName);
     }
@@ -114,27 +114,27 @@ public class StudentRest {
     public Response deleteStudent(@PathParam("id") Long id) {
         Student foundStudent = studentService.findStudentById(id);
         if (foundStudent == null) {
-            return NotFound("{\"Error\": \"Could not find a student with that ID.\"}");
+            return NotFound("Could not find a student with that ID.");
         }
         studentService.deleteStudent(id);
 
-        return OK("{\"Success\": \"Student deleted from database.\"}");
+        return OK("Student deleted from database.");
     }
 
     private Response OK(String message) {
-        return Response.ok("Success").entity(message).build();
+        return Response.ok("Success").entity(new JsonFormatter(Response.Status.OK.getStatusCode(), message)).build();
     }
 
     private Response NotFound(String message) {
-        return Response.status(Response.Status.NOT_FOUND).entity(message).build();
+        return Response.status(Response.Status.NOT_FOUND).entity(new JsonFormatter(Response.Status.NOT_FOUND.getStatusCode(), message)).build();
     }
 
     private Response BadRequest(String message) {
-        return Response.status(Response.Status.BAD_REQUEST).build();
+        return Response.status(Response.Status.BAD_REQUEST).entity(new JsonFormatter(Response.Status.BAD_REQUEST.getStatusCode(), message)).build();
     }
 
     private Response Conflict(String message) {
-        return Response.status(Response.Status.CONFLICT).build();
+        return Response.status(Response.Status.CONFLICT).entity(new JsonFormatter(Response.Status.CONFLICT.getStatusCode(), message)).build();
     }
 
 }

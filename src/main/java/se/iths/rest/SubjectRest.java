@@ -27,7 +27,7 @@ public class SubjectRest {
     @POST
     public Response addSubject(Subject subject) {
         Subject subjectResult = subjectService.createSubject(subject);
-        return OK("{\"Success\": \"Subject successfully saved to database.\"}");
+        return OK("Subject successfully saved to database.");
     }
 
     @Path("{id}")
@@ -44,9 +44,9 @@ public class SubjectRest {
 
     @Path("getall")
     @GET
-    public Response getAllSubjects(){
+    public Response getAllSubjects() {
         List<Subject> allSubjects = subjectService.findAllSubjects();
-        if (allSubjects.isEmpty()){
+        if (allSubjects.isEmpty()) {
             return Response.status(Response.Status.NO_CONTENT).build();
         } else {
             return Response.ok(allSubjects).build();
@@ -60,7 +60,7 @@ public class SubjectRest {
         Subject foundSubject = subjectService.findSubjectById(id);
 
         if (foundSubject == null) {
-            return NotFound("{\"Error\": \"Could not find a subject with that ID.\"}");
+            return NotFound("Could not find a subject with that ID.");
         }
 
         foundSubject.setSubjectName(subject.getSubjectName());
@@ -80,32 +80,47 @@ public class SubjectRest {
         }
         subjectService.deleteSubject(id);
 
-        return OK("{\"Success\": \"Subject deleted from database.\"}");
+        return OK("Subject deleted from database.");
     }
 
     @Path("linkstudent")
     @PATCH
-    public Response linkStudentToSubject(@QueryParam("studentId") Long studentId, @QueryParam("subjectId") Long subjectId){
+    public Response linkStudentToSubject(@QueryParam("studentId") Long studentId, @QueryParam("subjectId") Long subjectId) {
         Subject foundSubject = subjectService.findSubjectById(subjectId);
         Student foundStudent = subjectService.findStudentById(studentId);
 
-        if (foundSubject != null && foundStudent != null){
+        try {
             subjectService.linkStudent(foundSubject, foundStudent);
+        } catch (Exception e) {
+            String exceptionHelper;
+            if (foundSubject == null) {
+                exceptionHelper = "Subject not found.";
+            } else {
+                exceptionHelper = "Student not found.";
+            }
+            throw new WebApplicationException(NotFound(exceptionHelper));
         }
-        // add errorhandling here
+
         return Response.ok().build();
     }
 
     @Path("linkteacher")
     @PATCH
-    public Response linkTeacherToSubject(@QueryParam("teacherId") Long teacherId, @QueryParam("subjectId") Long subjectId){
+    public Response linkTeacherToSubject(@QueryParam("teacherId") Long teacherId, @QueryParam("subjectId") Long subjectId) {
         Subject foundSubject = subjectService.findSubjectById(subjectId);
         Teacher foundTeacher = subjectService.findTeacherById(teacherId);
 
-        if (foundSubject != null && foundTeacher != null){
+        try {
             subjectService.linkTeacher(foundSubject, foundTeacher);
+        } catch (Exception e) {
+            String exceptionHelper;
+            if (foundSubject == null) {
+                exceptionHelper = "Subject not found.";
+            } else {
+                exceptionHelper = "Teacher not found.";
+            }
+            throw new WebApplicationException(NotFound(exceptionHelper));
         }
-        // add errorhandling here
 
         return Response.ok().build();
     }

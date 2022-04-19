@@ -15,9 +15,6 @@ public class TeacherService {
 
     public Teacher createTeacher(Teacher teacher) {
 
-        // Adding subjects for demo purposes
-        // teacher.addSubject(new Subject("Svenska", teacher));
-
         entityManager.persist(teacher);
         return teacher;
     }

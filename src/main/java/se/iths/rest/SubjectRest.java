@@ -3,6 +3,7 @@ package se.iths.rest;
 import se.iths.entity.Student;
 import se.iths.entity.Subject;
 import se.iths.entity.Teacher;
+import se.iths.exceptions.JsonFormatter;
 import se.iths.service.SubjectService;
 
 import javax.inject.Inject;
@@ -75,10 +76,13 @@ public class SubjectRest {
     public Response deleteSubject(@PathParam("id") Long id) {
         Subject foundSubject = subjectService.findSubjectById(id);
 
-        if (foundSubject == null) {
-            return Response.status(Response.Status.NOT_FOUND).build();
+        try {
+            subjectService.deleteSubject(id);
+        } catch (Exception e){
+            if (foundSubject == null) {
+                return Response.status(Response.Status.NOT_FOUND).build();
+            }
         }
-        subjectService.deleteSubject(id);
 
         return OK("Subject deleted from database.");
     }
@@ -131,15 +135,15 @@ public class SubjectRest {
     }
 
     private Response NotFound(String message) {
-        return Response.status(Response.Status.NOT_FOUND).entity(message).build();
+        return Response.status(Response.Status.NOT_FOUND).entity(new JsonFormatter(Response.Status.NOT_FOUND.getStatusCode(), message)).build();
     }
 
     private Response BadRequest(String message) {
-        return Response.status(Response.Status.BAD_REQUEST).build();
+        return Response.status(Response.Status.BAD_REQUEST).entity(new JsonFormatter(Response.Status.BAD_REQUEST.getStatusCode(), message)).build();
     }
 
     private Response Conflict(String message) {
-        return Response.status(Response.Status.CONFLICT).build();
+        return Response.status(Response.Status.CONFLICT).entity(new JsonFormatter(Response.Status.CONFLICT.getStatusCode(), message)).build();
     }
 
 
